@@ -33,3 +33,8 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+<<<<<<< HEAD
+=======
+
+.env
+>>>>>>> 80825c2 (Váriaveis de Ambiente)
