@@ -2,7 +2,7 @@ import { TouchableOpacity } from "react-native";
 import { Power } from "phosphor-react-native"
 import { useUser, useApp } from "@realm/react";
 
-import theme from "../../theme";
+import { useTheme } from 'styled-components/native';
 
 import { Container, Greeting, Message, Name, Picture } from './styles';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,6 +11,8 @@ const blurhash = "L17_1hkCW=of00ayjZay~qj[ayjt"
 // blurhash Site = https://blurha.sh/
 
 export function HomeHeader() {
+
+  const theme = useTheme()
   const user = useUser()
   const app = useApp()
   const insets = useSafeAreaInsets()
