@@ -1,5 +1,7 @@
 import React from "react";
-import { TextInput, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
+import { TextInput, ScrollView, KeyboardAvoidingView, Platform, Alert } from "react-native";
+
+import { licensePlateValidate } from "../../utils/licensePlateValidate";
 
 import { LicensePlateInput } from "../../components/LicensePlateInput";
 import { TextAreaInput } from "../../components/TextAreaInput";
@@ -8,13 +10,25 @@ import { Header } from "../../components/Header";
 
 import { Container, Content } from "./styles";
 
-const keyboardAvoidingViewBehavior = Platform.OS === "android" ? "height" : "position";
+const keyboardAvoidingViewBehavior = Platform.OS === "android" ? "position" : "position";
 
 export function Departure() {
+  const [ description, setDescription ] = React.useState("")
+  const [ licensePlate, setLicensePlate ] = React.useState("")
+
+  const licensePlateRef = React.useRef<TextInput>(null);
   const descriptionRef = React.useRef<TextInput>(null);
 
   function handleDepartureRegister() {
-    console.log("ok");
+    if(!licensePlateValidate(licensePlate)) {
+      licensePlateRef.current?.focus();
+      return Alert.alert("Placa inválida", "A placa é inválida. Por favor, informe a placa correta do veículo.")
+    }
+
+    if(description.trim().length === 0) {
+      descriptionRef.current?.focus();
+      return Alert.alert('Finalidade', "Por favor, informe a finalidade da utilização do veículo")
+    }
   }
 
   return (
@@ -25,10 +39,12 @@ export function Departure() {
         <ScrollView>
           <Content>
             <LicensePlateInput
+              ref={licensePlateRef}
               label="Placa do veículo"
               placeholder="BRA1234"
-              onSubmitEditing={() => descriptionRef.current?.focus}
+              onSubmitEditing={() => descriptionRef.current?.focus()}
               returnKeyType="next"
+              onChangeText={(text) => setLicensePlate(text)}
             />
 
             <TextAreaInput
@@ -38,6 +54,7 @@ export function Departure() {
               onSubmitEditing={handleDepartureRegister}
               returnKeyType="send"
               blurOnSubmit
+              onChangeText={setDescription}
             />
 
             <Button title="Registrar saída" onPress={handleDepartureRegister} />
