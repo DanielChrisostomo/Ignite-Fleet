@@ -9,6 +9,7 @@ import { HomeHeader } from '../../components/HomeHeader';
 import { Container, Content } from './styles';
 import { Historic } from '../../libs/realm/schemas/Historic';
 import { Alert } from 'react-native';
+import { HistoricCard } from '../../components/HistoricCard';
 
 export function Home() {
   const [vehicleInUse, setVehicleInUse] = React.useState<Historic | null>(null)
@@ -36,17 +37,23 @@ export function Home() {
     }
   }
 
+  function fetchHistoric(){
+   const response = historic.filtered("status = 'arrival' SORT(created_at DESC)")
+  }
+
   React.useEffect(() => {
     fetchVehicleInUse()
   }, [])
 
   React.useEffect(() => {
-    console.log(vehicleInUse)
     realm.addListener("change", () => fetchVehicleInUse())
 
     return () => realm.removeListener("change", fetchVehicleInUse)
   }, [])
   
+  React.useEffect(() => {
+    fetchHistoric()
+  }, [historic])
 
   return (
     <Container>
@@ -57,6 +64,8 @@ export function Home() {
         licensePlate={vehicleInUse?.license_plate}
         onPress={handleRegisterMovement} 
         />
+
+        <HistoricCard data={{created: "20/04", licensePLate: "BRA0012", isSync: false}} />
       </Content>
     </Container>
   );
