@@ -4,23 +4,24 @@ import { Check, ClockClockwise } from "phosphor-react-native";
 import { Container, Info, LicensePlate, Departure } from "./styles";
 import { useTheme } from "styled-components/native";
 
-export type HistoryCardProps = {
-  licensePLate: string;
+export type HistoricCardProps = {
+  id: string;
+  licensePlate: string;
   created: string;
   isSync: boolean;
 };
 
 type Props = TouchableOpacityProps & {
-  data: HistoryCardProps;
+  data: HistoricCardProps;
 };
 
 export function HistoricCard({ data, ...rest }: Props) {
   const { COLORS } = useTheme();
 
   return (
-    <Container {...rest}>
+    <Container activeOpacity={0.7} {...rest}>
       <Info>
-        <LicensePlate>{data.licensePLate}</LicensePlate>
+        <LicensePlate>{data.licensePlate}</LicensePlate>
 
         <Departure>{data.created}</Departure>
       </Info>
