@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { CarSimple } from "phosphor-react-native";
 import {
   useForegroundPermissions,
+  requestBackgroundPermissionsAsync,
   watchPositionAsync,
   LocationAccuracy,
   LocationSubscription,
@@ -17,6 +18,7 @@ import { Historic } from "../../libs/realm/schemas/Historic";
 
 import { licensePlateValidate } from "../../utils/licensePlateValidate";
 import { getAddressLocation } from "../../utils/getAddressLocation";
+import { startLocationTask } from '../../tasks/backgroundLocationTask';
 
 import { Loading } from "../../components/Loading";
 import { LocationInfo } from "../../components/LocationInfo";
@@ -31,7 +33,7 @@ import { Container, Content, Message } from "./styles";
 export function Departure() {
   const [description, setDescription] = React.useState("");
   const [licensePlate, setLicensePlate] = React.useState("");
-  const [isRegistering, setisRegistering] = React.useState(false);
+  const [isRegistering, setIsResgistering] = React.useState(false);
   const [isLoadingLocation, setIsLoadingLocation] = React.useState(true);
   const [currentAddress, setCurrentAddress] = React.useState<string | null>(
     null
@@ -49,7 +51,7 @@ export function Departure() {
   const licensePlateRef = React.useRef<TextInput>(null);
   const descriptionRef = React.useRef<TextInput>(null);
 
-  function handleDepartureRegister() {
+  async function handleDepartureRegister() {
     try {
       if (!licensePlateValidate(licensePlate)) {
         licensePlateRef.current?.focus();
@@ -67,7 +69,20 @@ export function Departure() {
         );
       }
 
-      setisRegistering(true);
+      if(!currentCoords?.latitude && !currentCoords?.longitude) {
+        return Alert.alert('Localização', 'Não foi possível obter a localização atual. Tente novamente.')
+      }
+
+      setIsResgistering(true);
+
+      const backgroundPermissions = await requestBackgroundPermissionsAsync()
+
+      if(!backgroundPermissions.granted) {
+        setIsResgistering(false)
+        return Alert.alert('Localização', 'É necessário permitir que o App tenha acesso localização em segundo plano. Acesse as configurações do dispositivo e habilite "Permitir o tempo todo."')
+      }
+
+      await startLocationTask();
 
       realm.write(() => {
         realm.create(
@@ -86,7 +101,7 @@ export function Departure() {
       console.log(error);
       Alert.alert("Erro", "Não foi possível registrar a saída do veículo");
     }
-    setisRegistering(false);
+    setIsResgistering(false);
   }
 
   React.useEffect(() => {

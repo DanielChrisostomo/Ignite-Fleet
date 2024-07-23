@@ -20,8 +20,6 @@ export function Map({ coordinates, ...rest }: Props) {
   const { COLORS } = useTheme();
   const mapRef = React.useRef<MapView>(null);
 
-  console.log("CORDENADAS =>", coordinates[coordinates.length - 1]);
-
   const lastCoordinate = coordinates[coordinates.length - 1];
 
   async function onMapLoaded() {
